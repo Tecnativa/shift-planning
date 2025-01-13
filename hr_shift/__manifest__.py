@@ -3,7 +3,7 @@
 {
     "name": "Employees Shifts",
     "summary": "Define shifts for employees",
-    "version": "14.0.1.0.0",
+    "version": "15.0.1.0.0",
     "author": "Tecnativa, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "website": "https://github.com/OCA/shift-planning",
@@ -17,9 +17,12 @@
         "views/res_config_settings_views.xml",
         "wizards/shift_planning_wizard_views.xml",
         "views/hr_employee_views.xml",
-        "views/assets.xml",
     ],
-    "qweb": [
-        "static/src/xml/generate_planning_views.xml",
-    ],
+    "assets": {
+        "web.assets_backend": [
+            "/hr_shift/static/src/js/**/*.js",
+            "/hr_shift/static/src/scss/shift.scss",
+        ],
+        "web.assets_qweb": ["/hr_shift/static/src/xml/generate_planning_views.xml"],
+    },
 }
