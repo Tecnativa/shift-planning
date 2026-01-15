@@ -7,8 +7,6 @@ import pytz
 from odoo import api, models
 from odoo.tools import groupby
 
-from odoo.addons.resource.models.resource import string_to_datetime
-
 
 class ResourceCalendar(models.Model):
     _inherit = "resource.calendar"
@@ -34,7 +32,6 @@ class ResourceCalendar(models.Model):
     ):
         # Override calendar intervals when a shift is found and substitute those
         # intervals with the ones on the shift
-        # TODO: deal with TZ!
         res = super()._attendance_intervals_batch(
             start_dt, end_dt, resources, domain, tz
         )
@@ -42,6 +39,7 @@ class ResourceCalendar(models.Model):
             shift_ids = self._resource_shift_for_datetime_range(
                 start_dt, end_dt, resources, tz=tz
             )
+            tz = tz or pytz.timezone(self.tz)
             for resource, shifts in groupby(shift_ids, lambda x: x.resource_id):
                 intervals_to_add = []
                 intervals_to_remove = []
@@ -56,8 +54,8 @@ class ResourceCalendar(models.Model):
                             and shift.end_time >= datetime.combine(end, end.min.time())
                         )
                     ]
-                    start_time = string_to_datetime(shift.start_time).astimezone(tz)
-                    end_time = string_to_datetime(shift.end_time).astimezone(tz)
+                    start_time = shift.start_time.astimezone(tz)
+                    end_time = shift.end_time.astimezone(tz)
                     intervals_to_add.append((start_time, end_time, shift))
                 res[resource.id]._items = [
                     x for x in resource_intervals if x not in intervals_to_remove
